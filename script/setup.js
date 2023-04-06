@@ -355,13 +355,20 @@ try {
 		console.log(chalk.gray`✔️ Done.`);
 	}
 
-	console.log();
-	console.log(chalk.gray`Removing setup script...`);
+	const skipUninstalls = values["skip-uninstalls"];
 
-	await fs.rm("./script", { force: true, recursive: true });
-	await fs.rm(".github/workflows/setup.yml");
+	if (skipUninstalls) {
+		console.log();
+		console.log(chalk.gray`Skipping removal of setup script.`);
+	} else {
+		console.log();
+		console.log(chalk.gray`Removing setup script...`);
 
-	console.log(chalk.gray`✔️ Done.`);
+		await fs.rm("./script", { force: true, recursive: true });
+		await fs.rm(".github/workflows/setup.yml");
+
+		console.log(chalk.gray`✔️ Done.`);
+	}
 } catch (error) {
 	console.log(chalk.red(error.stack));
 	caughtError = error;
