@@ -33,6 +33,7 @@ try {
 			repository: { type: "string" },
 			title: { type: "string" },
 			"skip-api": { type: "boolean" },
+			"skip-uninstalls": { type: "boolean" },
 		},
 		tokens: true,
 		strict: false,
@@ -365,19 +366,41 @@ try {
 	console.log(chalk.red(error.stack));
 	caughtError = error;
 } finally {
-	console.log();
-	console.log(
-		chalk.gray`Removing devDependency packages only used for setup...`
-	);
+	const { values } = parseArgs({
+		args: process.argv.slice(2),
+		options: {
+			description: { type: "string" },
+			owner: { type: "string" },
+			repository: { type: "string" },
+			title: { type: "string" },
+			"skip-api": { type: "boolean" },
+			"skip-uninstalls": { type: "boolean" },
+		},
+		tokens: true,
+		strict: false,
+	});
 
-	try {
-		await $`pnpm remove execa @clack/prompts all-contributors-cli chalk octokit npm-user replace-in-file title-case -D`;
-	} catch (error) {
-		console.log("Error uninstalling packages:", error);
-		caughtError = error;
+	const skipUninstalls = values["skip-uninstalls"];
+
+	if (skipUninstalls) {
+		console.log(
+			chalk.gray`➖ Skipping removal of devDependencies only used for setup.`
+		);
+	} else {
+		console.log();
+		console.log(
+			chalk.gray`Removing devDependency packages only used for setup...`
+		);
+
+		try {
+			await $`pnpm remove execa @clack/prompts all-contributors-cli chalk octokit npm-user replace-in-file title-case -D`;
+		} catch (error) {
+			console.log("Error uninstalling packages:", error);
+			caughtError = error;
+		}
+
+		console.log(chalk.gray`✔️ Done.`);
 	}
-
-	console.log(chalk.gray`✔️ Done.`);
 }
 
 console.log();
