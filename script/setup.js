@@ -359,7 +359,7 @@ try {
 
 	if (skipUninstalls) {
 		console.log();
-		console.log(chalk.gray`Skipping removal of setup script.`);
+		console.log(chalk.gray`➖ Skipping removal of setup script.`);
 	} else {
 		console.log();
 		console.log(chalk.gray`Removing setup script...`);
